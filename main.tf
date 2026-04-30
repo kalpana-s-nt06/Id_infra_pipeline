@@ -3,5 +3,5 @@ provider "aws" {
 }
 
 resource "aws_iam_user" "test_user" {
-  name = "kalpana-iam-user"
+  name = "new-demo-user"
 }
