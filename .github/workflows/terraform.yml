@@ -38,3 +38,17 @@ jobs:
       - name: Terraform Apply (Only on Main)
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve
+
+      - name: Configure AWS Credentials (Dev)
+        if: github.ref == 'refs/heads/dev'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::<YOUR_ACCOUNT_ID>:role/github-terraform-dev-role
+          aws-region: us-east-1
+
+      - name: Configure AWS Credentials (Prod)
+        if: github.ref == 'refs/heads/main'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::<YOUR_ACCOUNT_ID>:role/github-terraform-prod-role
+          aws-region: us-east-1
