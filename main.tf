@@ -3,5 +3,5 @@ provider "aws" {
 }
 
 resource "aws_iam_user" "test_user" {
-  name = "dev-user-from-pipeline"
+  name = "kalpana-multi-user-setup"
 }
