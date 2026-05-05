@@ -1,61 +1,55 @@
 name: Terraform CI/CD
 
 on:
-push:
-branches:
-- dev
-- main
-pull_request:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
 
 permissions:
-id-token: write
-contents: read
+  id-token: write
+  contents: read
 
 jobs:
-terraform:
-runs-on: ubuntu-latest
+  terraform:
+    runs-on: ubuntu-latest
 
-```
-steps:
-  - name: Checkout Code
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  - name: Setup Terraform
-    uses: hashicorp/setup-terraform@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
 
-  # DEV ROLE
-  - name: Configure AWS Credentials (Dev)
-    if: github.ref == 'refs/heads/dev'
-    uses: aws-actions/configure-aws-credentials@v4
-    with:
-      role-to-assume: arn:aws:iam::393078901209:role/github-terraform-dev-role
-      aws-region: us-east-1
+      - name: Configure AWS Credentials (dev)
+        if: github.ref == 'refs/heads/dev'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::393078901209:role/github-terraform-dev-role
+          aws-region: us-east-1
 
-  # PROD ROLE
-  - name: Configure AWS Credentials (Prod)
-    if: github.ref == 'refs/heads/main'
-    uses: aws-actions/configure-aws-credentials@v4
-    with:
-      role-to-assume: arn:aws:iam::393078901209:role/github-terraform-prod-role
-      aws-region: us-east-1
+      - name: Configure AWS Credentials (main)
+        if: github.ref == 'refs/heads/main'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::393078901209:role/github-terraform-prod-role
+          aws-region: us-east-1
 
-  - name: Terraform Init
-    run: terraform init
+      - name: Terraform Init
+        run: terraform init
 
-  - name: Terraform Validate
-    run: terraform validate
+      - name: Terraform Validate
+        run: terraform validate
 
-  - name: Terraform Plan
-    run: terraform plan
+      - name: Terraform Plan
+        run: terraform plan
 
-  # DEV APPLY
-  - name: Terraform Apply (Dev)
-    if: github.ref == 'refs/heads/dev'
-    run: terraform apply -auto-approve
+      - name: Terraform Apply (dev)
+        if: github.ref == 'refs/heads/dev'
+        run: terraform apply -auto-approve
 
-  # PROD APPLY (WITH APPROVAL)
-  - name: Terraform Apply (Prod)
-    if: github.ref == 'refs/heads/main'
-    environment: prod
-    run: terraform apply -auto-approve
-```
+      - name: Terraform Apply (main)
+        if: github.ref == 'refs/heads/main'
+        environment: prod
+        run: terraform apply -auto-approve
